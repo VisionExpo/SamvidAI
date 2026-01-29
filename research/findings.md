@@ -1,3 +1,5 @@
-# TODO
+# Research Findings
 
-This document will be updated.
+- OCR-only pipelines lose table semantics
+- Region-level retrieval reduces hallucination
+- Vision + text embeddings outperform text-only
