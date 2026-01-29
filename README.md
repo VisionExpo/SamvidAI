@@ -3,64 +3,82 @@
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-1.0-blue?style=flat)
+![Version](https://img.shields.io/badge/version-0.1.0-blue?style=flat)
 ![Status](https://img.shields.io/badge/status-active-success?style=flat)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=flat&logo=python&logoColor=white)
-![Framework](https://img.shields.io/badge/Framework-Streamlit-red?style=flat&logo=streamlit&logoColor=white)
-![AI](https://img.shields.io/badge/AI-Gemini%201.5%20Pro-4285F4?style=flat&logo=google&logoColor=white)
+![UI](https://img.shields.io/badge/UI-Streamlit-red?style=flat&logo=streamlit&logoColor=white)
+![Backend](https://img.shields.io/badge/API-FastAPI-009688?style=flat&logo=fastapi&logoColor=white)
+![LLM](https://img.shields.io/badge/LLM-Gemini%202.5%20Pro-4285F4?style=flat&logo=google&logoColor=white)
 ![Vision](https://img.shields.io/badge/Vision-LayoutLMv3%20%2B%20OpenCV-5C3EE8?style=flat&logo=opencv&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=flat&logo=docker&logoColor=white)
-![Deploy](https://img.shields.io/badge/Deploy-Render-46E3B7?style=flat&logo=render&logoColor=white)
 ![License](https://img.shields.io/badge/license-MIT-green?style=flat)
 
 </div>
 
 ---
 
-SamvidAI is a **next-generation legal document intelligence platform** designed to analyze long, complex legal contracts (100+ pages) with **layout awareness, low latency, and human-in-the-loop validation**.
+## 🚧 Current Project Status
 
-Unlike traditional OCR or text-only NLP pipelines that flatten documents and lose structure, SamvidAI introduces **OpticalRAG** — a visual-first, retrieval-augmented architecture that preserves spatial context while dramatically reducing token cost, latency, and hallucinations.
+SamvidAI is in **active design and prototyping**.
+
+- Core architecture and OpticalRAG pipeline are defined
+- Experiments use **synthetic or publicly available documents**
+- **No confidential or client legal data** is used
+- Benchmarks are **prototype / controlled estimates**
+- Legal workflow validation is ongoing via practicing professionals
+
+The project prioritizes **correctness, safety, and validation before scale**.
 
 ---
 
-## 🧭 Philosophy
+## 🧭 What is SamvidAI?
+
+**SamvidAI** is a next-generation **legal document intelligence system** built to analyze long, complex contracts (50–300+ pages) using **layout-aware, vision-first retrieval**.
+
+Traditional OCR + NLP systems flatten documents into text, losing structure and introducing hallucinations.  
+SamvidAI instead introduces **OpticalRAG** — a multimodal retrieval-augmented architecture that preserves spatial context while reducing cost and latency.
+
+---
+
+## 🧠 Philosophy
 
 > **We do not replace attorneys. We empower them.**
 
-SamvidAI automates extraction, risk flagging, and summarization so legal experts can focus on **judgment, validation, and strategy**.
+SamvidAI automates extraction, retrieval, and risk flagging so legal professionals can focus on **judgment, validation, and strategy**.
+
+Human-in-the-loop review is a first-class design principle.
 
 ---
 
-## 🚀 Why SamvidAI?
-
-### ❌ The Problem
+## ❌ The Problem
 
 Legal contracts are:
-- Long (50–300 pages)
-- Highly structured and visual
+- Long and dense
+- Highly structured (clauses, tables, headers)
 - Extremely risk-sensitive
 
-Traditional systems fail because:
-- OCR destroys tables, columns, and clause hierarchy
+Existing approaches fail because:
+- OCR destroys layout semantics
 - Full-document LLM ingestion is expensive
 - Long-context hallucinations are common
-- Layout semantics are ignored
+- Clause hierarchy and visual grouping are ignored
 
 ---
 
-### ✅ The Solution — OpticalRAG
+## ✅ The Solution — OpticalRAG
 
-SamvidAI uses **OpticalRAG**, a hybrid **vision + retrieval + LLM** system that:
+**OpticalRAG** is a vision-first RAG pipeline that:
 
 - Treats documents as **visual data**
 - Retrieves **only relevant regions**
-- Converts to text **only when required**
+- Converts to text **only when necessary**
 
-#### Results
-- ✅ Up to **72% token reduction**
-- ✅ Up to **4× faster inference**
-- ✅ Layout-aware reasoning
-- ✅ Scales to **100+ page contracts**
+### Key Benefits
+- 🔻 Significant token reduction
+- ⚡ Faster inference
+- 🧭 Layout-aware reasoning
+- 📄 Scales to very long contracts
+- 🧠 Reduced hallucinations
 
 ---
 
@@ -88,63 +106,46 @@ LLM Reasoning on Relevant Regions Only
 ### Why OpticalRAG Works
 - Preserves spatial and structural context
 - Prevents lost-in-the-middle failures
-- Reduces hallucinations
 - Optimized for consumer GPUs
+- LLM is used for **reasoning**, not retrieval
 
 ---
 
-## 🧩 Core Features
+## 🧩 Core Capabilities
 
-### 🔍 OpticalRAG Retrieval
+### 🔍 Layout-Aware Retrieval
 - Vision-first document understanding
-- Multimodal embeddings (text + layout)
 - Hierarchical retrieval (page → section → clause)
 - Query-aware region selection
 
 ---
 
-### ⚠️ Automated Risk Detection
-Automatically flags:
+### ⚠️ Risk Flagging (Prototype)
+Identifies potentially risky clauses such as:
 - One-sided obligations
-- Non-standard clauses
-- Missing protections
-- Compliance risks
+- Unusual termination rights
+- Missing liability protections
 
-**Risk Levels**
+Risk levels:
 - 🔴 High Risk  
 - 🟠 Review Needed  
 - 🟢 Standard  
 
 ---
 
-### 📊 Predictive Clause Analytics
-- Identifies clauses historically linked to disputes
-- Highlights friction-prone contract sections
-- Enables proactive risk mitigation
-
----
-
 ### 📝 Smart Summarization
-Generates role-specific summaries:
-- Executive Summary
-- Financial Liabilities
-- Legal Obligations
-- Technical Constraints
+Role-specific summaries:
+- Executive overview
+- Key obligations
+- Financial exposure
+- Termination & liability highlights
 
 ---
 
 ### 👨‍⚖️ Human-in-the-Loop Review
-Attorneys can:
-- Accept AI flags
-- Reject incorrect findings
-- Edit interpretations
-
-Feedback enables:
-- Active learning
-- Dataset creation
-- Continuous improvement
-
-Creates a **long-term legal intelligence moat**.
+- Attorneys can accept or reject AI findings
+- Feedback enables iterative improvement
+- Designed for assistive decision-making
 
 ---
 
@@ -166,12 +167,14 @@ Creates a **long-term legal intelligence moat**.
 - ChromaDB
 
 ### LLMs
-- Gemini 1.5 Pro (cloud)
-- Qwen2.5-7B / Mistral 7B (local)
+- **Gemini 2.5 Pro** (primary, cloud reasoning)
+- Qwen2.5-7B / Mistral-7B (local fallback, quantized)
+
+> Gemini is used strictly for **reasoning over retrieved regions**, not full-document ingestion.
 
 ---
 
-## 💻 Local Installation
+## 💻 Local Setup (Prototype)
 
 ### 1️⃣ Clone Repository
 ```bash
@@ -237,13 +240,15 @@ streamlit run ui/streamlit_app.py
 
 ## 📊 Benchmarks (Internal Evaluation)
 ### Contract Size: 120 Pages
+> Based on controlled experiments and synthetic contracts.
+Not production guarantees.
+| Metric             | OCR + Text RAG | SamvidAI (OpticalRAG) |
+| ------------------ | -------------- | --------------------- |
+| Tokens to LLM      | High           | Significantly Lower   |
+| Latency            | High           | Reduced               |
+| Layout Accuracy    | Poor           | High                  |
+| Hallucination Risk | High           | Lower                 |
 
-| Metric             | OCR + Text RAG | LegalLens (OpticalRAG) |
-| ------------------ | -------------- | ---------------------- |
-| Tokens Sent to LLM | ~180k          | ~48k                   |
-| Avg Latency        | 42 sec         | 11 sec                 |
-| Hallucination Rate | High           | Low                    |
-| Table Accuracy     | Poor           | High                   |
 
 ### 💰 Cost Comparison (Per Document)
 
