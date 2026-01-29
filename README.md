@@ -259,26 +259,85 @@ streamlit run ui/streamlit_app.py
 ## 📂 Project Structure
 ```
 SamvidAI/
-├── core/
-│ ├── ingestion/ # PDF → image pipelines
-│ ├── layout/ # Layout-aware segmentation
-│ ├── retrieval/ # OpticalRAG logic
-│ └── risk_engine/ # Clause classification & risk scoring
-├── models/
-│ ├── embeddings/
-│ └── llm/
-├── api/
-│ └── main.py # FastAPI endpoints
-├── ui/
-│ └── streamlit_app.py # Human-in-the-loop dashboard
-├── data/
-│ ├── raw/
-│ └── processed/
+│
+├── README.md                  # Product-facing overview (FIRST IMPRESSION)
+├── WEBSITE.md                 # Landing page copy
+├── DEMO.md                    # Demo links + walkthrough
+│
+├── docs/                      # SYSTEM & ENGINEERING
+│   ├── HLD.md                 # High-Level Design
+│   ├── LLD.md                 # Low-Level Design
+│   ├── ARCHITECTURE.md        # Component & deployment architecture
+│   ├── PIPELINE.md            # End-to-end data & inference pipeline
+│   ├── DATA_REPORTS.md        # Metrics, charts, evaluations
+│   ├── EXPERIMENTS.md         # Ablations, experiments
+│   ├── BENCHMARKS.md          # Performance comparisons
+│   ├── SECURITY.md            # Security considerations
+│   ├── ETHICS.md              # Ethics & safety
+│
+├── research/                  # SCIENTIFIC THINKING
+│   ├── related_work.md        # Prior research & models
+│   ├── papers.md              # Paper summaries & links
+│   ├── findings.md            # Your insights & failures
+│
+├── product/                   # FOUNDER MODE
+│   ├── roadmap.md             # 30-90-365 day plan
+│   ├── monetization.md        # Business model
+│   ├── user_personas.md       # Target users
+│   ├── go_to_market.md        # Distribution strategy
+│
+├── src/                       # CODE
+│   └── samvidai/
+│       ├── __init__.py
+│       │
+│       ├── ingestion/         # PDF → image → layout
+│       │   ├── __init__.py
+│       │   ├── pdf_to_image.py
+│       │   └── preprocess.py
+│       │
+│       ├── layout/            # Layout-aware segmentation
+│       │   ├── __init__.py
+│       │   └── layoutlm.py
+│       │
+│       ├── retrieval/         # OpticalRAG core
+│       │   ├── __init__.py
+│       │   ├── embeddings.py
+│       │   ├── vector_store.py
+│       │   └── retriever.py
+│       │
+│       ├── risk_engine/       # Clause classification & risk scoring
+│       │   ├── __init__.py
+│       │   ├── classifier.py
+│       │   └── scorer.py
+│       │
+│       ├── llm/               # LLM interfaces
+│       │   ├── __init__.py
+│       │   ├── prompts.py
+│       │   └── inference.py
+│       │
+│       └── utils/
+│           ├── __init__.py
+│           └── logger.py
+│
+├── api/                       # BACKEND
+│   └── main.py                # FastAPI app
+│
+├── ui/                        # FRONTEND
+│   └── streamlit_app.py
+│
+├── assets/                    # VISUALS
+│   ├── images/
+│   ├── videos/
+│   └── diagrams/
+│
 ├── tests/
+│    └── TESTING_PLAN.md/
 ├── docker/
-│ └── Dockerfile
+│   └── Dockerfile
+│
 ├── requirements.txt
-└── README.md
+└── .gitignore
+
 ```
 
 ---
