@@ -346,3 +346,5 @@ You’ll feel right at home here.
 ## 📜 License
 
 MIT License
+
+If you like this project, ⭐ star the repo and join the journey.
