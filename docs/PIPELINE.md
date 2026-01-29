@@ -1,3 +1,9 @@
-# TODO
+# End-to-End Pipeline
 
-This document will be updated.
+1. Input PDF
+2. Image generation
+3. Layout segmentation
+4. Region embedding
+5. Query-time retrieval
+6. LLM reasoning
+7. Human validation
