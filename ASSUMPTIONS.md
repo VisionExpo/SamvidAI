@@ -1,0 +1,4 @@
+- Legal professionals handle large volumes of contracts
+- Most contracts are PDFs or scanned documents
+- AI assistance is allowed if data is private and secure
+- Initial users prefer insights, not auto-decisions
