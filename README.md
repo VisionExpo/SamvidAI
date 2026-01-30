@@ -14,6 +14,9 @@
 ![License](https://img.shields.io/badge/license-MIT-green?style=flat)
 
 </div>
+📐 **System Design:**  
+High Level Design → [`docs/HLD.md`](docs/HLD.md)
+
 
 ---
 
@@ -47,6 +50,33 @@ SamvidAI instead introduces **OpticalRAG** — a multimodal retrieval-augmented 
 SamvidAI automates extraction, retrieval, and risk flagging so legal professionals can focus on **judgment, validation, and strategy**.
 
 Human-in-the-loop review is a first-class design principle.
+
+---
+
+---
+
+## 📘 Architecture & Design Documentation
+
+SamvidAI follows a **documentation-first, system-design-driven approach**.  
+All major architectural and design decisions are formally documented and versioned.
+
+### 🔹 High Level Design (HLD)
+
+The High Level Design document covers:
+- End-to-end system architecture
+- OpticalRAG design rationale
+- Component responsibilities
+- Model & LLM strategy (Gemini 2.5 Pro usage)
+- Data flow, security, ethics, and deployment
+- Scalability, risks, and future extensions
+
+📄 **Read on GitHub**  
+👉 [`docs/HLD.md`](docs/HLD.md)
+
+⬇️ **Download full design document (DOCX, 20+ pages)**  
+👉 [`docs/HLD.docx`](docs/HLD.docx)
+
+> The DOCX version is the authoritative long-form design, suitable for deep review and offline reading.
 
 ---
 
@@ -270,8 +300,9 @@ SamvidAI/
 ├── WEBSITE.md                 # Landing page copy
 ├── DEMO.md                    # Demo links + walkthrough
 │
-├── docs/                      # SYSTEM & ENGINEERING
+├── docs/                      # SYSTEM & ENGINEERING (AUTHORITATIVE DESIGN)
 │   ├── HLD.md                 # High-Level Design
+│   ├── HLD.docx               # High-Level Design (Long-form, downloadable)    
 │   ├── LLD.md                 # Low-Level Design
 │   ├── ARCHITECTURE.md        # Component & deployment architecture
 │   ├── PIPELINE.md            # End-to-end data & inference pipeline
@@ -396,7 +427,7 @@ SamvidAI is built with a **startup-first mindset**:
 - Open-source friendly
 - Enterprise-ready foundation
 
-The long-term goal is to evolve LegalLens into a **full legal intelligence platform** for contract review, compliance, and dispute risk forecasting.
+The long-term goal is to evolve SamvidAI into a **full legal intelligence platform** for contract review, compliance, and dispute risk forecasting.
 
 ---
 
