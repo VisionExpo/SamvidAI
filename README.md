@@ -73,8 +73,8 @@ The High Level Design document covers:
 📄 **Read on GitHub**  
 👉 [`docs/HLD.md`](docs/HLD.md)
 
-⬇️ **Download full design document (DOCX, 20+ pages)**  
-👉 [`docs/HLD.docx`](docs/HLD.docx)
+⬇️ **Download full design document (DOCX, 90+ pages)**  
+👉 [`docs/HLD.docx`](docs/SamvidAI_HLD.docx)
 
 > The DOCX version is the authoritative long-form design, suitable for deep review and offline reading.
 
