@@ -1,1 +1,5 @@
-# Add dependencies here
+fastapi
+uvicorn
+pydantic
+python-dotenv
+loguru
