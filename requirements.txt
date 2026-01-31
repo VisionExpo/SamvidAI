@@ -5,3 +5,5 @@ python-dotenv
 loguru
 pdf2image
 pillow
+opencv-python
+numpy
