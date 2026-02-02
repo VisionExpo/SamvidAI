@@ -1,0 +1,1 @@
+from .legal_agent import LegalAgent
