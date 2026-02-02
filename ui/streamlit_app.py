@@ -49,22 +49,29 @@ if analyze:
             "question": question,
         }
 
-        with st.spinner("Analyzing contract..."):
-            resp = requests.post(
-                f"{API_URL}/analyze-contract",
+        # --- Risk Analysis ---
+        with st.spinner("Analyzing risks..."):
+            risk_resp = requests.post(
+                f"{API_URL}/analyze-risk",
                 json=payload,
                 timeout=300,
             )
 
-        if resp.status_code != 200:
-            st.error(f"API error: {resp.text}")
-        else:
-            data = resp.json()
+        if risk_resp.status_code == 200:
+            risks = risk_resp.json()["risks"]
 
-            st.subheader("✅ Answer")
-            st.write(data["answer"])
+            st.subheader("⚠️ Risk Analysis")
 
-            st.subheader("📌 Supporting Clauses")
-            for c in data["retrieved_clauses"]:
-                with st.expander(c["clause_id"]):
-                    st.write(c["text"])
+            if not risks:
+                st.success("No significant risks detected.")
+            else:
+                for r in risks:
+                    level = risk_level(r["risk_score"])
+                    color = risk_color(level)
+
+                    with st.expander(f"{color} {level} — {r['clause_id']}"):
+                        if r["risks"]:
+                            for item in r["risks"]:
+                                st.write(f"- {item}")
+                        else:
+                            st.write("No explicit risks detected.")
