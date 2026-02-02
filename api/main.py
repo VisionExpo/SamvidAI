@@ -1,5 +1,7 @@
 from fastapi import FastAPI
+
 from api.schemas.request_response import (
+    HealthResponse,
     QARequest,
     QAResponse,
     RiskRequest,
@@ -26,9 +28,8 @@ from samvidai.llm.agents import LegalAgent
 
 
 app = FastAPI(title="SamvidAI", version="0.1.0")
-
-retriever = Retriever()
 agent = LegalAgent()
+
 
 @app.get("/health", response_model=HealthResponse)
 def health():
@@ -58,17 +59,18 @@ def summarize(payload: SummaryRequest):
     response_model=AnalyzeContractResponse,
 )
 def analyze_contract(payload: AnalyzeContractRequest):
+
+    retriever = Retriever()
+
     images = ingest_pdf(
         pdf_path=payload.pdf_path,
         work_dir="data/processed"
     )
 
     blocks = segment_layout(images)
-
     retriever.index(blocks)
 
     retrieved = retriever.retrieve(payload.question)
-
     context = [c["text"] for c in retrieved]
 
     answer = agent.answer_question(
@@ -77,11 +79,7 @@ def analyze_contract(payload: AnalyzeContractRequest):
     )
 
     if answer == "Not found in the provided contract.":
-        return {
-            "answer": answer,
-            "retrieved_clauses": [],
-        }
-
+        return {"answer": answer, "retrieved_clauses": []}
 
     citations = [
         {"clause_id": c["clause_id"], "text": c["text"]}
@@ -98,23 +96,19 @@ def analyze_contract(payload: AnalyzeContractRequest):
     response_model=AnalyzeRiskResponse,
 )
 def analyze_risk(payload: AnalyzeRiskRequest):
-    """
-    Risk analysis on retrieved contract clauses
-    """
 
-    # 1. Ingest + segment
+    retriever = Retriever()
+
     images = ingest_pdf(
         pdf_path=payload.pdf_path,
         work_dir="data/processed"
     )
 
     blocks = segment_layout(images)
-
-    # 2. Index + retrieve relevant clauses
     retriever.index(blocks)
+
     retrieved = retriever.retrieve(payload.question)
 
-    # 3. Risk analysis
     risk_results = []
 
     for clause in retrieved:
@@ -127,6 +121,4 @@ def analyze_risk(payload: AnalyzeRiskRequest):
             "risk_score": score,
         })
 
-    return {
-        "risks": risk_results
-    }
+    return {"risks": risk_results}
