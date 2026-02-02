@@ -1,4 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+
+from api.deps import get_retriever, get_legal_agent
 from api.schemas.rag import (
     AnalyzeContractRequest,
     AnalyzeContractResponse,
@@ -14,18 +16,19 @@ from samvidai.retrieval import Retriever
 from samvidai.llm.agents import LegalAgent
 from samvidai.risk_engine import classify_clause, score_risks
 
-router = APIRouter(tags=["Analysis"])
 
-agent = LegalAgent()
+router = APIRouter(tags=["Analysis"])
 
 
 @router.post(
     "/analyze-contract",
     response_model=AnalyzeContractResponse,
 )
-def analyze_contract(payload: AnalyzeContractRequest):
-    retriever = Retriever()  # per-request isolation ✅
-
+def analyze_contract(
+    payload: AnalyzeContractRequest,
+    retriever: Retriever = Depends(get_retriever),
+    agent: LegalAgent = Depends(get_legal_agent),
+):
     images = ingest_pdf(
         pdf_path=payload.pdf_path,
         work_dir="data/processed"
@@ -45,14 +48,12 @@ def analyze_contract(payload: AnalyzeContractRequest):
     if answer == "Not found in the provided contract.":
         return {"answer": answer, "retrieved_clauses": []}
 
-    citations = [
-        {"clause_id": c["clause_id"], "text": c["text"]}
-        for c in retrieved
-    ]
-
     return {
         "answer": answer,
-        "retrieved_clauses": citations,
+        "retrieved_clauses": [
+            {"clause_id": c["clause_id"], "text": c["text"]}
+            for c in retrieved
+        ],
     }
 
 
@@ -60,9 +61,10 @@ def analyze_contract(payload: AnalyzeContractRequest):
     "/analyze-risk",
     response_model=AnalyzeRiskResponse,
 )
-def analyze_risk(payload: AnalyzeRiskRequest):
-    retriever = Retriever()  # per-request isolation ✅
-
+def analyze_risk(
+    payload: AnalyzeRiskRequest,
+    retriever: Retriever = Depends(get_retriever),
+):
     images = ingest_pdf(
         pdf_path=payload.pdf_path,
         work_dir="data/processed"
