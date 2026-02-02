@@ -13,6 +13,12 @@ from api.schemas.rag import (
     AnalyzeContractResponse,
 )
 
+from api.schemas.risk import (
+    AnalyzeRiskRequest,
+    AnalyzeRiskResponse,
+)
+
+from samvidai.risk_engine import classify_clause, score_risks
 from samvidai.ingestion import ingest_pdf
 from samvidai.layout import segment_layout
 from samvidai.retrieval import Retriever
@@ -78,4 +84,42 @@ def analyze_contract(payload: AnalyzeContractRequest):
     return {
         "answer": answer,
         "retrieved_clauses": citations,
+    }
+
+@app.post(
+    "/analyze-risk",
+    response_model=AnalyzeRiskResponse,
+)
+def analyze_risk(payload: AnalyzeRiskRequest):
+    """
+    Risk analysis on retrieved contract clauses
+    """
+
+    # 1. Ingest + segment
+    images = ingest_pdf(
+        pdf_path=payload.pdf_path,
+        work_dir="data/processed"
+    )
+
+    blocks = segment_layout(images)
+
+    # 2. Index + retrieve relevant clauses
+    retriever.index(blocks)
+    retrieved = retriever.retrieve(payload.question)
+
+    # 3. Risk analysis
+    risk_results = []
+
+    for clause in retrieved:
+        risks = classify_clause(clause["text"])
+        score = score_risks(risks)
+
+        risk_results.append({
+            "clause_id": clause["clause_id"],
+            "risks": risks,
+            "risk_score": score,
+        })
+
+    return {
+        "risks": risk_results
     }
