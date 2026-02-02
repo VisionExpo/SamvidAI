@@ -1,179 +1,212 @@
 # 🧪 Testing Strategy & Plan
 
-This document outlines the **testing philosophy, scope, and roadmap** for SamvidAI.
+This document outlines the **testing philosophy, scope, and roadmap** for SamvidAI, aligned with the current test suite structure.
 
-SamvidAI is a **multimodal, retrieval-augmented AI system**, where correctness depends on both
-deterministic pipelines and probabilistic model behavior.  
-Testing is therefore **layered, pragmatic, and staged**, rather than exhaustive from day one.
+SamvidAI is a **multimodal, retrieval-augmented AI system**, where correctness depends on both deterministic pipelines and probabilistic model behavior.
+Testing is therefore **layered, pragmatic, and staged**, focusing on stability, regressions, and system confidence rather than brittle assertions.
 
 ---
 
 ## 🎯 Testing Philosophy
 
-- Test **what can deterministically fail**
-- Avoid over-testing probabilistic LLM outputs
-- Prioritize **pipeline stability, performance, and regressions**
-- Add tests **after behavior stabilizes**, not before
+* Test **what can deterministically fail**
+* Avoid over-asserting probabilistic LLM outputs
+* Prioritize **pipeline stability, regressions, and safety**
+* Introduce strict tests **only after behavior stabilizes**
 
-> The goal is confidence, not 100% coverage.
-
----
-
-## 🧱 Testing Layers
-
-SamvidAI follows a **layered testing approach**:
-
-1. **Unit Tests** – Deterministic components
-2. **Integration Tests** – Pipeline interactions
-3. **Regression Tests** – Behavioral consistency
-4. **Performance Tests** – Latency & memory
-5. **Manual / Human Validation** – LLM quality
+> The goal is confidence and safety — not 100% coverage.
 
 ---
 
-## 🧪 Phase-Wise Testing Plan
+## 🧱 Testing Layers & Mapping
 
-### Phase 1 — Core Pipeline (Initial)
-
-**Focus:** Deterministic correctness
-
-Planned tests:
-- PDF → image conversion
-- File I/O validation
-- Page count consistency
-- Image resolution verification
-
-Examples:
-- Invalid PDF handling
-- Corrupted input files
-- Large document ingestion
+| Layer            | Purpose                            | Test Paths                          |
+| ---------------- | ---------------------------------- | ----------------------------------- |
+| API Tests        | Contract stability & schema safety | `tests/api/`                        |
+| Pipeline Tests   | Deterministic transformations      | `tests/layout/`, `tests/retrieval/` |
+| Logic Tests      | Rule-based correctness             | `tests/risk_engine/`                |
+| LLM Safety Tests | Prompt & guardrail safety          | `tests/llm/`                        |
+| Dependency Tests | Injection & wiring                 | `tests/injection/`                  |
 
 ---
 
-### Phase 2 — Retrieval & Embeddings
+## 🧪 Test Suite Breakdown (By Path)
 
-**Focus:** Retrieval sanity & stability
+### 1️⃣ API Layer
 
-Planned tests:
-- Embedding generation does not crash
-- Vector store insert / query works
-- Top-K retrieval returns expected regions
-- Empty or malformed queries
+**Path:** `tests/api/`
+
+Files:
+
+* `test_health.py`
+* `test_analyze_contract.py`
+
+**Focus:**
+
+* Endpoint availability
+* Request/response schema validation
+* Failure handling (bad input, empty files)
+
+**Explicitly NOT tested:**
+
+* Semantic correctness of LLM output
+
+---
+
+### 2️⃣ Dependency Injection & Wiring
+
+**Path:** `tests/injection/test_deps.py`
+
+**Focus:**
+
+* Dependency graph resolution
+* Mock vs production dependency switching
+* Startup failure prevention
+
+Goal: ensure the system **boots predictably** in all environments.
+
+---
+
+### 3️⃣ Layout & Document Segmentation
+
+**Path:** `tests/layout/test_layout_segmentation.py`
+
+**Focus:**
+
+* Page & block segmentation
+* Layout object consistency
+* Failure safety on malformed documents
+
+Validated properties:
+
+* Non-empty outputs
+* Stable bounding boxes
+* Deterministic segmentation behavior
+
+---
+
+### 4️⃣ Retrieval & Embeddings
+
+**Path:** `tests/retrieval/test_retriever.py`
+
+**Focus:**
+
+* Embedding pipeline stability
+* Vector store insert/query safety
+* Top-K retrieval shape consistency
 
 Notes:
-- Retrieval quality is validated manually initially
-- Numerical correctness > semantic perfection
+
+* Retrieval relevance is validated **manually** during early stages
+* Tests ensure **numerical and structural correctness**, not semantic quality
 
 ---
 
-### Phase 3 — Risk Engine
+### 5️⃣ Risk Engine
 
-**Focus:** Rule-based logic correctness
+**Path:** `tests/risk_engine/`
 
-Planned tests:
-- Clause classification mapping
-- Risk label assignment (Red / Amber / Green)
-- Confidence score boundaries
-- Missing clause detection
+Files:
 
-LLM output content is **not strictly asserted**.
+* `test_classifier.py`
+* `test_scorer.py`
 
----
+**Focus:**
 
-### Phase 4 — Human-in-the-Loop Flow
+* Clause → category mapping
+* Risk score boundaries
+* Deterministic label assignment (Red / Amber / Green)
 
-**Focus:** System stability
-
-Planned tests:
-- Accept / reject actions do not crash
-- Feedback is persisted correctly
-- Session-level state consistency
-- UI → backend interaction sanity
+LLM-generated explanations are **not strictly asserted**.
 
 ---
 
-## 🔁 Regression Testing
+### 6️⃣ LLM Safety & Prompting
 
-Regression tests are added **once acceptable behavior is reached**.
+**Path:** `tests/llm/`
 
-Goals:
-- Prevent token explosion
-- Detect major latency regressions
-- Ensure retrieval does not silently degrade
+Files:
 
-Regression signals:
-- Sudden latency increase (>30%)
-- Token count deviation
-- VRAM usage spikes
+* `test_guardrails.py`
+* `test_prompts.py`
 
----
+**Focus:**
 
-## ⚙️ Performance & Resource Testing
+* Prompt template stability
+* Guardrail enforcement
+* Prevention of prompt injection & runaway outputs
 
-Performance testing is **first-class**, not optional.
-
-Tracked metrics:
-- End-to-end latency
-- Token count per query
-- VRAM usage
-- CPU memory usage
-
-Target thresholds:
-- Latency < 15s (120-page contract)
-- VRAM < 8 GB
-- Token usage reduction ≥ 60% vs full-text RAG
+Assertions are **structural and policy-based**, not linguistic.
 
 ---
 
-## 🧠 What We Do NOT Test Early
+## 🔁 Regression Testing Strategy
 
-- Exact LLM wording
-- Natural language creativity
-- UI pixel-perfect rendering
-- Model “correctness” in subjective outputs
+Regression tests are introduced **after acceptable behavior is observed**.
 
-These are validated through:
-- Human review
-- Qualitative evaluation
-- Data reports
+Regression signals include:
 
----
-
-## 🛠️ Tools & Frameworks (Planned)
-
-- `pytest` for unit and integration tests
-- Lightweight fixtures for sample PDFs
-- Manual evaluation for LLM outputs
-- Simple logging-based assertions for performance
-
-CI integration will be added once:
-- Core pipelines stabilize
-- Test suite becomes deterministic
+* Latency increase > 30%
+* Token usage deviation
+* Retrieval output shape changes
+* Risk score drift outside thresholds
 
 ---
 
-## 📂 Future Test Structure
-```
-tests/
-├── ingestion/
-│ └── test_pdf_to_image.py
-├── retrieval/
-│ └── test_retriever.py
-├── risk_engine/
-│ └── test_scoring.py
-├── performance/
-│ └── test_latency.py
-└── test_smoke.py
-```
+## ⚙️ Performance & Resource Awareness
+
+Performance testing is **first-class**, even if lightweight initially.
+
+Tracked signals:
+
+* End-to-end latency
+* Token usage per request
+* VRAM & CPU memory usage
+
+Target benchmarks:
+
+* < 15s for 120-page contract
+* VRAM < 8 GB
+* ≥ 60% token reduction vs full-text RAG
+
+---
+
+## 🧠 What We Intentionally Do NOT Test Early
+
+* Exact LLM phrasing
+* Subjective legal correctness
+* UI pixel-perfect rendering
+* Creative language quality
+
+These are validated via:
+
+* Human review
+* Qualitative evaluation
+* Data & evaluation reports
+
+---
+
+## 🛠️ Tools & Execution
+
+* `pytest` for unit & integration tests
+* Controlled fixtures & mocks
+* Logging-based assertions for performance
+
+CI will be enabled once:
+
+* Pipelines stabilize
+* Test outcomes are deterministic
+
 ---
 
 ## 🧭 Final Note
 
-Testing in SamvidAI is **intentional, staged, and pragmatic**.
+Testing in SamvidAI is **intentional, safety-oriented, and staged**.
 
-The system prioritizes:
-- Stability over premature coverage
-- Performance over cosmetic correctness
-- Human-validated intelligence over brittle assertions
+The strategy favors:
 
-This strategy ensures high confidence **without slowing down innovation**.
+* Stability over premature rigor
+* Guardrails over fragile correctness
+* Human-validated intelligence over brittle tests
+
+This approach ensures confidence **without slowing down innovation**.
