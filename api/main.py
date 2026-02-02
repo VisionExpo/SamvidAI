@@ -52,34 +52,30 @@ def summarize(payload: SummaryRequest):
     response_model=AnalyzeContractResponse,
 )
 def analyze_contract(payload: AnalyzeContractRequest):
-    """
-    End-to-end OpticalRAG contract analysis:
-    PDF → layout → retrieval → LLM
-    """
-
-    # 1. Ingest PDF
     images = ingest_pdf(
         pdf_path=payload.pdf_path,
         work_dir="data/processed"
     )
 
-    # 2. Layout-aware segmentation
     blocks = segment_layout(images)
-    clause_texts = [b["text"] for b in blocks]
 
-    # 3. Index clauses
-    retriever.index(clause_texts)
+    retriever.index(blocks)
 
-    # 4. Retrieve relevant clauses
     retrieved = retriever.retrieve(payload.question)
 
-    # 5. Legal reasoning
+    context = [c["text"] for c in retrieved]
+
     answer = agent.answer_question(
         question=payload.question,
-        context=retrieved
+        context=context
     )
+
+    citations = [
+        {"clause_id": c["clause_id"], "text": c["text"]}
+        for c in retrieved
+    ]
 
     return {
         "answer": answer,
-        "retrieved_clauses": retrieved,
+        "retrieved_clauses": citations,
     }
