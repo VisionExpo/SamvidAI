@@ -1,17 +1,18 @@
-# src/samvidai/llm/inference.py
+from samvidai.llm.providers.gemini_provider import GeminiProvider
+
+_provider = None
+
+
+def get_provider():
+    global _provider
+    if _provider is None:
+        _provider = GeminiProvider()
+    return _provider
+
 
 def run_llm(prompt: str) -> str:
     """
-    Unified LLM inference interface.
-    Replace this with real model / API call later.
+    Unified LLM inference entrypoint (Gemini 2.5 Pro)
     """
-    # Mock implementation (safe, deterministic)
-    return f"""
-[MOCK LLM RESPONSE]
-
-PROMPT RECEIVED:
-{prompt[:500]}...
-
-NOTE:
-This is a placeholder for real LLM inference.
-"""
+    provider = get_provider()
+    return provider.generate(prompt)
