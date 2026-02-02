@@ -1,24 +1,24 @@
 import faiss
 import numpy as np
-from typing import List
+from typing import List, Dict
 
 
 class VectorStore:
     """
-    In-memory FAISS vector store for contract clauses
+    FAISS vector store with clause metadata
     """
 
     def __init__(self, dim: int):
         self.index = faiss.IndexFlatL2(dim)
-        self.texts: List[str] = []
+        self.records: List[Dict] = []
 
-    def add(self, vectors, texts: List[str]):
-        if len(vectors) != len(texts):
-            raise ValueError("Vectors and texts length mismatch")
+    def add(self, vectors, records: List[Dict]):
+        if len(vectors) != len(records):
+            raise ValueError("Vectors and records length mismatch")
 
         self.index.add(np.array(vectors))
-        self.texts.extend(texts)
+        self.records.extend(records)
 
-    def search(self, query_vector, top_k: int = 5) -> List[str]:
+    def search(self, query_vector, top_k: int = 5) -> List[Dict]:
         _, indices = self.index.search(query_vector, top_k)
-        return [self.texts[i] for i in indices[0]]
+        return [self.records[i] for i in indices[0]]
