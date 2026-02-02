@@ -76,6 +76,13 @@ def analyze_contract(payload: AnalyzeContractRequest):
         context=context
     )
 
+    if answer == "Not found in the provided contract.":
+        return {
+            "answer": answer,
+            "retrieved_clauses": [],
+        }
+
+
     citations = [
         {"clause_id": c["clause_id"], "text": c["text"]}
         for c in retrieved
