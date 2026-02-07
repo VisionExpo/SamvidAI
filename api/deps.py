@@ -1,3 +1,8 @@
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
 from samvidai.retrieval.embedding import EmbeddingModel
 from samvidai.llm.providers.gemini_provider import GeminiProvider
 from samvidai.llm.agents.legal_agent import LegalAgent
