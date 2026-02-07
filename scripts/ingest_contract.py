@@ -3,7 +3,7 @@ from pathlib import Path
 
 from samvidai.ingestion.config import DataSource, get_processed_path
 from samvidai.layout.text_extractor import DigitalPDFTextExtractor
-from samvidai.chunking.chunker import chunk_pages
+from samvidai.chunking.chunker import TextChunker
 from samvidai.retrieval.embedding import EmbeddingModel
 from samvidai.retrieval.index import VectorIndex
 
@@ -26,11 +26,18 @@ def main(pdf_path: Path):
     pages = extractor.extract()
     print(f"[INFO] Extracted {len(pages)} pages")
 
-    # 3️⃣ Chunk
-    chunks = chunk_pages(pages)
+    # 3️⃣ Chunk pages
+    chunker = TextChunker(chunk_size=800, overlap=100)
+    chunks = chunker.chunk_pages(
+        pages=pages,
+        metadata={
+            "source": source.value,
+            "document": pdf_path.name,
+        },
+    )
     print(f"[INFO] Created {len(chunks)} chunks")
 
-    # 4️⃣ Embed + build index
+    # 4️⃣ Build vector index
     embedder = EmbeddingModel()
     VectorIndex.build(
         chunks=chunks,
