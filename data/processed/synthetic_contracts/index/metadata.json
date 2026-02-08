@@ -1,0 +1,23 @@
+[
+  {
+    "text": "NON-DISCLOSURE AGREEMENT (NDA) \n \nThis Non-Disclosure Agreement (“Agreement”) is entered into on 1 January 2025 \nbetween AlphaTech Solutions Pvt. Ltd., a company incorporated under the laws of \nIndia, having its registered office at [Fictional Address] (“Disclosing Party”), \nand Beta Consulting Services Pvt. Ltd., having its registered office at \n[Fictional Address] (“Receiving Party”). \n \n1. Definition of Confidential Information \n“Confidential Information” means all information disclosed by the Disclosing \nParty to the Receiving Party, whether oral, written, electronic, or otherwise, \nincluding but not limited to business plans, technical data, financial \ninformation, client lists, and trade secrets. \n \n2. Purpose \nThe Confidential Information is disclosed solely for the purpose of evalu",
+    "page_number": 1,
+    "chunk_index": 0,
+    "source": "synthetic_contracts",
+    "document": "NDA_Synthetic.pdf"
+  },
+  {
+    "text": "de secrets. \n \n2. Purpose \nThe Confidential Information is disclosed solely for the purpose of evaluating \na potential business relationship between the parties (“Purpose”). \n \n3. Obligations of the Receiving Party \nThe Receiving Party shall: \n(a) keep the Confidential Information strictly confidential; \n(b) not disclose it to any third party without prior written consent; \n(c) use the Confidential Information only for the stated Purpose. \n \n4. Exclusions \nConfidential Information shall not include information that: \n(a) is in the public domain; \n(b) was lawfully known to the Receiving Party prior to disclosure;",
+    "page_number": 1,
+    "chunk_index": 1,
+    "source": "synthetic_contracts",
+    "document": "NDA_Synthetic.pdf"
+  },
+  {
+    "text": "(c) is required to be disclosed by law or court order. \n \n5. Term and Survival \nThis Agreement shall remain in force for a period of three (3) years from the \ndate of execution. The confidentiality obligations shall survive termination. \n \n6. Remedies \nThe Disclosing Party shall be entitled to injunctive relief in case of breach, \nin addition to any other remedies available under law. \n \n7. Governing Law and Jurisdiction \nThis Agreement shall be governed by the laws of India. Courts at Mumbai shall \nhave exclusive jurisdiction. \n \nIN WITNESS WHEREOF, the parties have executed this Agreement on the date first \nwritten above.",
+    "page_number": 2,
+    "chunk_index": 0,
+    "source": "synthetic_contracts",
+    "document": "NDA_Synthetic.pdf"
+  }
+]

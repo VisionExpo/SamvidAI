@@ -6,7 +6,7 @@ import numpy as np
 
 class VectorIndex:
     def __init__(self, dim: int):
-        # Inner Product for semantic similarity
+        # Inner Product similarity
         self.index = faiss.IndexFlatIP(dim)
         self.metadata = []
 
@@ -46,3 +46,27 @@ class VectorIndex:
         obj.index = index
         obj.metadata = metadata
         return obj
+
+    @classmethod
+    def build(cls, chunks: list[dict], embedder, output_dir: Path):
+        if not chunks:
+            raise ValueError("No chunks provided for indexing")
+
+        texts = [c["text"] for c in chunks]
+        embeddings = embedder.encode(texts)
+        embeddings = np.asarray(embeddings, dtype="float32")
+
+        # Normalize for cosine similarity via inner product
+        faiss.normalize_L2(embeddings)
+
+        dim = embeddings.shape[1]
+        index = cls(dim)
+        index.add(embeddings, chunks)
+
+        output_dir.mkdir(parents=True, exist_ok=True)
+        index.save(
+            index_path=output_dir / "vectors.index",
+            meta_path=output_dir / "metadata.json",
+        )
+
+        return index
