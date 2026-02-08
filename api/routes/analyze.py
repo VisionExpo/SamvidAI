@@ -35,7 +35,7 @@ def analyze_qa(
 
     answer = agent.answer_question(
         req.question,
-        [c["text"] for c in clauses],
+        clauses,
     )
 
     return AnalyzeContractResponse(
