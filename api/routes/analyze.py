@@ -41,10 +41,13 @@ def analyze_qa(
     return AnalyzeContractResponse(
         answer=answer,
         retrieved_clauses=[
-            {"clause_id": c["id"], "text": c["text"]}
-            for c in clauses
-        ],
-    )
+    {
+        "clause_id": f"page_{c['page_number']}_chunk_{c['chunk_index']}",
+        "text": c["text"],
+    }
+    for c in clauses
+    ],
+)
 
 
 @router.post("/analyze/risk", response_model=AnalyzeRiskResponse)
