@@ -23,7 +23,7 @@ arbitration governing law force majeure confidentiality
 """
 
 
-@router.post("/analyze/qa", response_model=AnalyzeContractResponse)
+@router.post("/qa", response_model=AnalyzeContractResponse)
 def analyze_qa(
     req: AnalyzeContractRequest,
     embedder=Depends(get_embedder),
@@ -57,7 +57,7 @@ def analyze_qa(
     )
 
 
-@router.post("/analyze/risk", response_model=AnalyzeRiskResponse)
+@router.post("/risk", response_model=AnalyzeRiskResponse)
 def analyze_risk(
     req: AnalyzeRiskRequest,
     embedder=Depends(get_embedder),

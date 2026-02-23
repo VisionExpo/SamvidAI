@@ -1,5 +1,5 @@
 import os
-import google.generativeai as genai
+from google import genai
 from samvidai.llm.providers.base import LLMProvider
 
 
@@ -13,13 +13,14 @@ class GeminiProvider(LLMProvider):
         if not api_key:
             raise RuntimeError("GEMINI_API_KEY not set")
 
-        genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel(model)
+        self.client = genai.Client(api_key=api_key)
+        self.model = model
 
     def generate(self, prompt: str) -> str:
-        response = self.model.generate_content(
-            prompt,
-            generation_config={
+        response = self.client.models.generate_content(
+            model=self.model,
+            contents=prompt,
+            config={
                 "temperature": 0.2,
                 "top_p": 0.9,
             },

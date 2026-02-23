@@ -18,7 +18,11 @@ def get_legal_agent():
     if provider_name == "mock":
         provider = MockProvider()
     else:
-        provider = GeminiProvider()
+        # Use mock if no API key is set
+        if not os.getenv("GEMINI_API_KEY"):
+            provider = MockProvider()
+        else:
+            provider = GeminiProvider()
 
     return LegalAgent(provider)
 

@@ -10,6 +10,6 @@ numpy
 sentence-transformers
 faiss-cpu
 streamlit
-google-generativeai>=0.5.0
+google-genai>=1.0.0
 PyMuPDF>=1.23.0
 python-multipart
