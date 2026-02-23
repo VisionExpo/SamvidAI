@@ -34,7 +34,7 @@ if st.button("Analyze Contract"):
     if uploaded_file is None:
         st.warning("Please upload a PDF file.")
     else:
-        with st.spinner("Analyzing contract..."):
+        with st.spinner("Uploading and analyzing contract..."):
             try:
                 # Read the file content
                 file_content = uploaded_file.getvalue()
@@ -66,5 +66,14 @@ if st.button("Analyze Contract"):
                     st.info("No risky clauses detected.")
 
             except Exception as e:
-                st.error(f"Error: {str(e)}")
-                st.info("Make sure the backend is running and the PDF file is valid.")
+                error_msg = str(e)
+                st.error(f"Error: {error_msg}")
+                
+                # Provide helpful guidance based on error type
+                if "500" in error_msg:
+                    st.info("💡 The uploaded PDF may not be indexed yet. This system requires pre-indexed PDFs for analysis.")
+                    st.info("To index a new PDF, run: `python scripts/ingest_contract.py <pdf_path>`")
+                elif "404" in error_msg:
+                    st.info("💡 Make sure the backend API is running: `uvicorn api.main:app`")
+                else:
+                    st.info("Please check that the backend is running and the PDF file is valid.")
