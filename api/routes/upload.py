@@ -66,6 +66,7 @@ def upload_contract(
                 "status": "uploaded",
                 "filename": file.filename,
                 "data_source": data_source,
+                "pdf_path": str(dest),
                 "ingestion_status": "failed",
                 "ingestion_error": str(e),
             }
@@ -74,6 +75,7 @@ def upload_contract(
         "status": "uploaded",
         "filename": file.filename,
         "data_source": data_source,
+        "pdf_path": str(dest),
         "ingestion_status": "success" if chunks_count > 0 else "skipped",
         "chunks_created": chunks_count,
     }

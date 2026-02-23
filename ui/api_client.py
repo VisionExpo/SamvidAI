@@ -16,12 +16,11 @@ def upload_contract(file: Union[io.BytesIO, bytes], filename: str, data_source: 
         data_source: Target directory in data folder (default: govt_contracts)
         
     Returns:
-        dict with status, filename, data_source, ingestion_status
+        dict with status, filename, data_source, pdf_path, ingestion_status
     """
     files = {"file": (filename, file, "application/pdf")}
     data = {"data_source": data_source, "auto_ingest": "true"}
     
-    # Note: The API has /upload prefix and route is /upload, so full path is /upload/upload
     resp = requests.post(
         f"{API_BASE}/upload/upload",
         files=files,
@@ -72,8 +71,11 @@ def analyze_contract_from_upload(file: Union[io.BytesIO, bytes], filename: str, 
     if upload_result.get("ingestion_status") == "failed":
         raise Exception(f"Failed to index PDF: {upload_result.get('ingestion_error', 'Unknown error')}")
     
-    # Get the saved path
-    saved_path = f"data/{upload_result['data_source']}/{upload_result['filename']}"
+    # Get the saved path directly from the response
+    saved_path = upload_result.get("pdf_path")
+    
+    if not saved_path:
+        raise Exception("No PDF path returned from upload")
     
     # Then analyze
     return analyze_contract(saved_path, top_k=top_k)
