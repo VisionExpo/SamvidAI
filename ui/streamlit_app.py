@@ -6,30 +6,46 @@ ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
 
-from ui.api_client import analyze_contract
+from ui.api_client import analyze_contract_from_upload
 
 
 st.set_page_config(page_title="SamvidAI", layout="wide")
 
 st.title("🧠 SamvidAI – Contract Risk Analyzer")
 
-# PDF Path input
-pdf_path = st.text_input(
-    "Contract PDF Path",
-    placeholder="data/govt_contracts/BARC_General_Conditions_of_Contract_GCC.pdf",
-    help="Enter the full path to the contract PDF file"
+# PDF File uploader
+uploaded_file = st.file_uploader(
+    "Upload Contract PDF",
+    type=["pdf"],
+    help="Upload a contract PDF file to analyze"
+)
+
+# Data source selection
+data_source = st.selectbox(
+    "Data Source",
+    options=["govt_contracts", "synthetic_contracts", "public_judgments", "acts_and_rules"],
+    help="Select where to store the uploaded contract"
 )
 
 # Top K slider
 top_k = st.slider("Number of clauses to analyze", min_value=5, max_value=20, value=10)
 
 if st.button("Analyze Contract"):
-    if not pdf_path.strip():
-        st.warning("Please enter a PDF path.")
+    if uploaded_file is None:
+        st.warning("Please upload a PDF file.")
     else:
         with st.spinner("Analyzing contract..."):
             try:
-                result = analyze_contract(pdf_path, top_k=top_k)
+                # Read the file content
+                file_content = uploaded_file.getvalue()
+                filename = uploaded_file.name
+                
+                result = analyze_contract_from_upload(
+                    file_content, 
+                    filename, 
+                    top_k=top_k,
+                    data_source=data_source
+                )
 
                 # Display metrics
                 col1, col2, col3 = st.columns(3)
@@ -51,4 +67,4 @@ if st.button("Analyze Contract"):
 
             except Exception as e:
                 st.error(f"Error: {str(e)}")
-                st.info("Make sure the backend is running and the PDF path is correct.")
+                st.info("Make sure the backend is running and the PDF file is valid.")
