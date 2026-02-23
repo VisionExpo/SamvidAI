@@ -70,17 +70,38 @@ def analyze_risk(
     query_embedding = embedder.encode(
         ["termination penalty liability indemnity arbitration breach"]
     )
+
     clauses = index.search(query_embedding, top_k=10)
 
-    risks = []
+    clause_levels = []
+    clause_outputs = []
+
     for clause in clauses:
-        analysis = agent.analyze_clause_risk(clause["text"])
-        risks.append(
+        clause_text = clause["text"]
+
+        # 1️⃣ LLM analysis
+        analysis = agent.analyze_clause_risk(clause_text)
+
+        # 2️⃣ Hybrid classification
+        level = classifier.classify_clause(clause_text, analysis)
+
+        clause_levels.append(level)
+
+        clause_outputs.append(
             {
                 "clause_id": clause["id"],
-                "risks": [analysis],
-                "risk_score": classifier.classify_clause(analysis),
+                "text": clause_text,
+                "risk_level": level,
+                "reason": analysis,
             }
         )
 
-    return AnalyzeRiskResponse(risks=risks)
+    # 3️⃣ Document-level scoring
+    doc_score = scorer.score(clause_levels)
+
+    return {
+        "risk_score": doc_score["risk_score"],
+        "risk_level": doc_score["risk_level"],
+        "clauses_analyzed": doc_score["clauses_analyzed"],
+        "clauses": clause_outputs,
+    }
