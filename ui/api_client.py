@@ -4,7 +4,6 @@ import requests
 from typing import Union
 
 API_BASE = os.getenv("SAMVID_API_URL", "http://localhost:8000")
-MOCK_MODE = os.getenv("MOCK_MODE", "false").lower() == "true"
 
 
 def upload_contract(file: Union[io.BytesIO, bytes], filename: str, data_source: str = "govt_contracts"):
@@ -19,13 +18,6 @@ def upload_contract(file: Union[io.BytesIO, bytes], filename: str, data_source: 
     Returns:
         dict with status, filename, data_source
     """
-    if MOCK_MODE:
-        return {
-            "status": "uploaded",
-            "filename": filename,
-            "data_source": data_source,
-        }
-
     files = {"file": (filename, file, "application/pdf")}
     data = {"data_source": data_source}
     
@@ -50,33 +42,6 @@ def analyze_contract(pdf_path: str, top_k: int = 10):
     Returns:
         dict with risk_score, risk_level, clauses_analyzed, clauses
     """
-    if MOCK_MODE:
-        return {
-            "risk_score": 72,
-            "risk_level": "HIGH",
-            "clauses_analyzed": 3,
-            "clauses": [
-                {
-                    "clause_id": "page_1_chunk_1",
-                    "text": "Unilateral termination clause",
-                    "risk_level": "HIGH",
-                    "reason": "Allows termination without cause"
-                },
-                {
-                    "clause_id": "page_1_chunk_2",
-                    "text": "Missing indemnity cap",
-                    "risk_level": "HIGH",
-                    "reason": "No limit on indemnity obligations"
-                },
-                {
-                    "clause_id": "page_2_chunk_1",
-                    "text": "Jurisdiction favors counterparty",
-                    "risk_level": "MEDIUM",
-                    "reason": "Legal disputes resolved in foreign jurisdiction"
-                }
-            ]
-        }
-
     resp = requests.post(
         f"{API_BASE}/analyze/risk",
         json={"pdf_path": pdf_path, "top_k": top_k},
