@@ -8,8 +8,11 @@ pillow
 opencv-python
 numpy
 sentence-transformers
-faiss-cpu
+faiss-gpu
 streamlit
 google-genai>=1.0.0
+torch>=2.5.0
+torchvision>=0.20.0
+torchaudio>=2.5.0
 PyMuPDF>=1.23.0
 python-multipart
