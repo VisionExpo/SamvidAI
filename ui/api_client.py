@@ -21,8 +21,9 @@ def upload_contract(file: Union[io.BytesIO, bytes], filename: str, data_source: 
     files = {"file": (filename, file, "application/pdf")}
     data = {"data_source": data_source}
     
+    # Note: The API has /upload prefix and route is /upload, so full path is /upload/upload
     resp = requests.post(
-        f"{API_BASE}/upload",
+        f"{API_BASE}/upload/upload",
         files=files,
         data=data,
         timeout=30
