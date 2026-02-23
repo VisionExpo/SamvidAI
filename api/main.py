@@ -1,4 +1,11 @@
 from fastapi import FastAPI
+from dotenv import load_dotenv
+from pathlib import Path
+
+# Load .env file
+env_path = Path(__file__).parent.parent / ".env"
+load_dotenv(env_path)
+
 from api.routes import analyze, health, upload
 
 app = FastAPI(
