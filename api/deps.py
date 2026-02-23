@@ -13,17 +13,13 @@ def get_embedder():
 
 
 def get_legal_agent():
-    provider_name = os.getenv("LLM_PROVIDER", "gemini").lower()
-
-    if provider_name == "mock":
-        provider = MockProvider()
-    else:
-        # Use mock if no API key is set
-        if not os.getenv("GEMINI_API_KEY"):
-            provider = MockProvider()
-        else:
-            provider = GeminiProvider()
-
+    # Always use Gemini provider if API key is available
+    api_key = os.getenv("GEMINI_API_KEY")
+    
+    if not api_key:
+        raise RuntimeError("GEMINI_API_KEY not set in environment")
+    
+    provider = GeminiProvider()
     return LegalAgent(provider)
 
 
