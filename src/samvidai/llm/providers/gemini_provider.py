@@ -21,9 +21,10 @@ class GeminiProvider(LLMProvider):
             model=self.model,
             contents=prompt,
             config={
-                "temperature": 0.2,
-                "top_p": 0.9,
+                "temperature": 0.0,
+                "top_p": 0.1,
+                "max_output_tokens": 220,
             },
         )
 
-        return response.text.strip()
+        return (response.text or "").strip()

@@ -1,6 +1,5 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List
-from pydantic import Field
 
 
 class ClauseRisk(BaseModel):
@@ -13,7 +12,7 @@ class ClauseRisk(BaseModel):
 
 class AnalyzeRiskRequest(BaseModel):
     """Request schema for risk analysis endpoint."""
-    index_id: str
+    index_id: str = Field(pattern=r"^(acts_and_rules|govt_contracts|public_judgments|synthetic_contracts):[a-f0-9]{32}$")
     top_k: int = Field(default=10, ge=1, le=50)
 
 
