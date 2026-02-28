@@ -1,5 +1,6 @@
 from fastapi import APIRouter, UploadFile, File
 from pathlib import Path
+import shutil
 import fitz  # PyMuPDF
 
 from samvidai.ingestion.config import DataSource, get_processed_path
@@ -57,7 +58,8 @@ def extract_text_from_pdf(pdf_path: Path) -> tuple:
         # Cleanup temp images
         for img_path in image_paths:
             Path(img_path).unlink(missing_ok=True)
-        work_dir.rmdir(missing_ok=True)
+        # Python <3.12 compatibility: Path.rmdir has no missing_ok parameter.
+        shutil.rmtree(work_dir, ignore_errors=True)
         
         if any(p["text"] for p in ocr_pages):
             return ocr_pages, "ocr"
