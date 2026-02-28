@@ -7,12 +7,14 @@ env_path = Path(__file__).parent.parent / ".env"
 load_dotenv(env_path)
 
 from api.routes import analyze, health, upload
+from api.errors import register_error_handlers
 
 app = FastAPI(
     title="SamvidAI",
     description="Intelligent Contract Analysis Engine",
     version="1.0.0",
 )
+register_error_handlers(app)
 
 
 @app.get("/")
