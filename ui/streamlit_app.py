@@ -71,9 +71,8 @@ if st.button("Analyze Contract"):
                 
                 # Provide helpful guidance based on error type
                 if "500" in error_msg:
-                    st.info("💡 The uploaded PDF may not be indexed yet. This system requires pre-indexed PDFs for analysis.")
-                    st.info("To index a new PDF, run: `python scripts/ingest_contract.py <pdf_path>`")
+                    st.info("The backend failed during indexing or risk analysis. Check API logs for details.")
                 elif "404" in error_msg:
-                    st.info("💡 Make sure the backend API is running: `uvicorn api.main:app`")
+                    st.info("The upload index was not found. Re-upload the file and retry.")
                 else:
                     st.info("Please check that the backend is running and the PDF file is valid.")

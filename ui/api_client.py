@@ -1,7 +1,8 @@
-import os
 import io
+import os
+from typing import Union
+
 import requests
-from typing import Optional, Union
 
 API_BASE = os.getenv("SAMVID_API_URL", "http://localhost:8000")
 
@@ -31,21 +32,20 @@ def upload_contract(file: Union[io.BytesIO, bytes], filename: str, data_source: 
     return resp.json()
 
 
-def analyze_contract(pdf_path: str, top_k: int = 10, index_id: Optional[str] = None):
+def analyze_contract(index_id: str, top_k: int = 10):
     """
     Analyze contract risk via API.
     
     Args:
-        pdf_path: Virtual or source path used for backward compatibility
+        index_id: Uploaded-index reference returned by /upload/upload
         top_k: Number of top clauses to retrieve for analysis
-        index_id: Optional uploaded-index reference returned by /upload/upload
         
     Returns:
         dict with risk_score, risk_level, clauses_analyzed, clauses
     """
     resp = requests.post(
         f"{API_BASE}/analyze/risk",
-        json={"pdf_path": pdf_path, "top_k": top_k, "index_id": index_id},
+        json={"index_id": index_id, "top_k": top_k},
         timeout=30
     )
     resp.raise_for_status()
@@ -72,9 +72,10 @@ def analyze_contract_from_upload(file: Union[io.BytesIO, bytes], filename: str, 
     if upload_result.get("ingestion_status") == "failed":
         raise Exception(f"Failed to index PDF: {upload_result.get('ingestion_error', 'Unknown error')}")
     
-    # Prefer index_id for ephemeral uploads; fall back to pdf_path for compatibility.
+    # Uploaded flow is index_id-only for risk analysis.
     index_id = upload_result.get("index_id")
-    saved_path = upload_result.get("pdf_path", f"virtual://{data_source}/{filename}")
+    if not index_id:
+        raise Exception("No index_id returned from upload")
 
     # Then analyze
-    return analyze_contract(saved_path, top_k=top_k, index_id=index_id)
+    return analyze_contract(index_id=index_id, top_k=top_k)

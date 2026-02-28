@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import List
-from typing import Optional
+from pydantic import Field
 
 
 class ClauseRisk(BaseModel):
@@ -13,9 +13,8 @@ class ClauseRisk(BaseModel):
 
 class AnalyzeRiskRequest(BaseModel):
     """Request schema for risk analysis endpoint."""
-    pdf_path: str
-    top_k: int = 10
-    index_id: Optional[str] = None
+    index_id: str
+    top_k: int = Field(default=10, ge=1, le=50)
 
 
 class AnalyzeRiskResponse(BaseModel):
