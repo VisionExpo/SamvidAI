@@ -1,3 +1,4 @@
+import json
 import re
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -33,6 +34,22 @@ def _format_llm_error(exc: Exception) -> str:
         f"LLM analysis unavailable ({exc.__class__.__name__}: {msg}). "
         "Applied rule-based risk classification from clause text."
     )
+
+
+def _parse_llm_json(analysis: str) -> tuple[str | None, str]:
+    try:
+        parsed = json.loads(analysis)
+        if not isinstance(parsed, dict):
+            return None, analysis
+        level = str(parsed.get("risk_level", "")).upper().strip()
+        reason = str(parsed.get("reason", "")).strip()
+        if level not in {"HIGH", "MEDIUM", "LOW"}:
+            level = None
+        if not reason:
+            reason = analysis
+        return level, reason
+    except Exception:
+        return None, analysis
 
 
 def _resolve_index_dir(pdf_path: str, index_id: str | None):
@@ -155,7 +172,9 @@ def analyze_risk(
             analysis = _format_llm_error(exc)
 
         # 5) Run classifier.
-        level = classifier.classify_clause(clause_text, analysis)
+        parsed_level, parsed_reason = _parse_llm_json(analysis)
+        classifier_input = parsed_level or analysis
+        level = classifier.classify_clause(clause_text, classifier_input)
         clause_levels.append(level)
 
         clause_outputs.append(
@@ -166,7 +185,7 @@ def analyze_risk(
                 ),
                 text=clause_text,
                 risk_level=level,
-                reason=analysis,
+                reason=parsed_reason,
             )
         )
 
