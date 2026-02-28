@@ -23,6 +23,16 @@ arbitration governing law force majeure confidentiality
 """
 
 
+def _format_llm_error(exc: Exception) -> str:
+    msg = " ".join(str(exc).split())
+    if len(msg) > 240:
+        msg = msg[:237] + "..."
+    return (
+        f"LLM analysis unavailable ({exc.__class__.__name__}: {msg}). "
+        "Applied rule-based risk classification from clause text."
+    )
+
+
 @router.post("/qa", response_model=AnalyzeContractResponse)
 def analyze_qa(
     req: AnalyzeContractRequest,
@@ -98,7 +108,7 @@ def analyze_risk(
         try:
             analysis = agent.analyze_clause_risk(clause_text)
         except Exception as e:
-            analysis = "LLM analysis failed. Defaulting to LOW risk."
+            analysis = _format_llm_error(e)
 
         # 2️⃣ Hybrid classification
         level = classifier.classify_clause(clause_text, analysis)
