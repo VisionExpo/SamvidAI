@@ -1,10 +1,11 @@
 from fastapi import APIRouter, UploadFile, File
 from pathlib import Path
 import shutil
+import tempfile
+from uuid import uuid4
 import fitz  # PyMuPDF
 
 from samvidai.ingestion.config import DataSource, get_processed_path
-from samvidai.layout.text_extractor import DigitalPDFTextExtractor
 from samvidai.chunking.chunker import TextChunker
 from samvidai.retrieval.embedding import EmbeddingModel
 from samvidai.retrieval.index import VectorIndex
@@ -69,12 +70,18 @@ def extract_text_from_pdf(pdf_path: Path) -> tuple:
     return pages, "empty"
 
 
-def ingest_pdf(pdf_path: Path, source: DataSource):
+def ingest_pdf(
+    pdf_path: Path,
+    source: DataSource,
+    index_dir: Path | None = None,
+    document_name: str | None = None,
+):
     """
     Ingest a PDF and create its vector index.
     """
-    processed_dir = get_processed_path(source)
-    index_dir = processed_dir / "index"
+    if index_dir is None:
+        processed_dir = get_processed_path(source)
+        index_dir = processed_dir / "index"
     index_dir.mkdir(parents=True, exist_ok=True)
 
     # Extract text (with OCR fallback)
@@ -86,7 +93,7 @@ def ingest_pdf(pdf_path: Path, source: DataSource):
         pages=pages,
         metadata={
             "source": source.value,
-            "document": pdf_path.name,
+            "document": document_name or pdf_path.name,
             "extraction_method": extraction_method,
         },
     )
@@ -108,36 +115,58 @@ def ingest_pdf(pdf_path: Path, source: DataSource):
 @router.post("/upload")
 def upload_contract(
     file: UploadFile = File(...),
-    data_source: str = "govt_contracts",
+    data_source: DataSource = DataSource.GOVT_CONTRACTS,
     auto_ingest: bool = True,
 ):
-    dest = Path("data") / data_source / file.filename
-    dest.parent.mkdir(parents=True, exist_ok=True)
+    source = data_source
+    filename = Path(file.filename or "uploaded.pdf").name
+    upload_id = uuid4().hex
+    upload_index_dir = get_processed_path(source) / "uploads" / upload_id
 
-    with open(dest, "wb") as f:
-        f.write(file.file.read())
+    temp_pdf_path = None
+    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+    try:
+        tmp.write(file.file.read())
+        tmp.flush()
+        temp_pdf_path = Path(tmp.name)
+    finally:
+        tmp.close()
 
     # Auto-ingest the PDF if requested
     chunks_count = 0
+    index_id = None
     if auto_ingest:
+        index_id = f"{source.value}:{upload_id}"
         try:
-            source = DataSource(data_source)
-            chunks_count = ingest_pdf(dest, source)
+            chunks_count = ingest_pdf(
+                temp_pdf_path,
+                source,
+                index_dir=upload_index_dir,
+                document_name=filename,
+            )
         except Exception as e:
             return {
                 "status": "uploaded",
-                "filename": file.filename,
-                "data_source": data_source,
-                "pdf_path": str(dest),
+                "filename": filename,
+                "data_source": source.value,
+                "pdf_path": f"virtual://{source.value}/{filename}",
+                "index_id": index_id,
                 "ingestion_status": "failed",
                 "ingestion_error": str(e),
             }
+        finally:
+            if temp_pdf_path is not None:
+                temp_pdf_path.unlink(missing_ok=True)
+    else:
+        if temp_pdf_path is not None:
+            temp_pdf_path.unlink(missing_ok=True)
 
     return {
         "status": "uploaded",
-        "filename": file.filename,
-        "data_source": data_source,
-        "pdf_path": str(dest),
+        "filename": filename,
+        "data_source": source.value,
+        "pdf_path": f"virtual://{source.value}/{filename}",
+        "index_id": index_id,
         "ingestion_status": "success" if chunks_count > 0 else "skipped",
         "chunks_created": chunks_count,
     }

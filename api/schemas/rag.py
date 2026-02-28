@@ -6,6 +6,7 @@ class AnalyzeContractRequest(BaseModel):
     pdf_path: str
     question: str
     top_k: int = 5
+    index_id: Optional[str] = None
 
 
 class ClauseCitation(BaseModel):

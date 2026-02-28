@@ -24,7 +24,7 @@ uploaded_file = st.file_uploader(
 data_source = st.selectbox(
     "Data Source",
     options=["govt_contracts", "synthetic_contracts", "public_judgments", "acts_and_rules"],
-    help="Select where to store the uploaded contract"
+    help="Select index namespace for this upload (the original PDF is not persisted)"
 )
 
 # Top K slider

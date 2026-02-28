@@ -1,3 +1,5 @@
+import re
+
 from fastapi import APIRouter, Depends, HTTPException
 
 from api.schemas.rag import (
@@ -33,14 +35,32 @@ def _format_llm_error(exc: Exception) -> str:
     )
 
 
+def _resolve_index_dir(pdf_path: str, index_id: str | None):
+    if index_id:
+        try:
+            source_str, upload_id = index_id.split(":", 1)
+            source = DataSource(source_str)
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=f"Invalid index_id format: {index_id}") from exc
+        if not re.fullmatch(r"[a-f0-9]{32}", upload_id):
+            raise HTTPException(status_code=400, detail=f"Invalid index_id format: {index_id}")
+
+        index_dir = get_processed_path(source) / "uploads" / upload_id
+        if not (index_dir / "vectors.index").exists() or not (index_dir / "metadata.json").exists():
+            raise HTTPException(status_code=404, detail=f"Index not found for index_id: {index_id}")
+        return index_dir
+
+    source = DataSource.from_pdf_path(pdf_path)
+    return get_processed_path(source) / "index"
+
+
 @router.post("/qa", response_model=AnalyzeContractResponse)
 def analyze_qa(
     req: AnalyzeContractRequest,
     embedder=Depends(get_embedder),
     agent=Depends(get_legal_agent),
 ):
-    source = DataSource.from_pdf_path(req.pdf_path)
-    index_dir = get_processed_path(source) / "index"
+    index_dir = _resolve_index_dir(req.pdf_path, req.index_id)
 
     index = VectorIndex.load(
         index_dir / "vectors.index",
@@ -76,8 +96,7 @@ def analyze_risk(
 ):
     classifier, scorer = engines
 
-    source = DataSource.from_pdf_path(req.pdf_path)
-    index_dir = get_processed_path(source) / "index"
+    index_dir = _resolve_index_dir(req.pdf_path, req.index_id)
 
     index = VectorIndex.load(
         index_dir / "vectors.index",
