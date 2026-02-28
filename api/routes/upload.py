@@ -40,7 +40,7 @@ def extract_text_from_pdf(pdf_path: Path) -> tuple:
     # Try OCR for scanned PDFs
     try:
         # Convert PDF to images
-        work_dir = pdf_path.parent / "temp_images"
+        work_dir = Path(tempfile.mkdtemp(prefix="samvidai_ocr_"))
         image_paths = pdf_to_images(str(pdf_path), str(work_dir))
         
         # Extract text using layout segmentation
